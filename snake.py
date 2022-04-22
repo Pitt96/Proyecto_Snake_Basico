@@ -1,6 +1,9 @@
+#instale la libreria pygame para la musica: pip install pygame
 import turtle
 import time
 import random
+import pygame, sys
+
 
 posponer=0.1
 #marcador
@@ -68,13 +71,20 @@ wn.onkeypress(arriba,"Up")
 wn.onkeypress(abajo,"Down")
 wn.onkeypress(izquierda,"Left")
 wn.onkeypress(derecha,"Right")
-
-
+pygame.init()
+pygame.mixer.music.load('./Sonidos/fondo.mp3')
+pygame.mixer.music.play(100)
+sonidoChoque=pygame.mixer.Sound("./Sonidos/choque.wav")
+sonidoComida=pygame.mixer.Sound("./Sonidos/comida.wav")
 while True:
     wn.update()
     #chocar a los costados
     if cabeza.xcor()>280 or cabeza.xcor()<-280 or cabeza.ycor()>280 or cabeza.ycor()<-280:
-        time.sleep(1)
+        pygame.mixer.music.pause()
+        sonidoChoque.play()
+        time.sleep(2)
+        pygame.mixer.music.unpause()
+        pygame.mixer.music.rewind()
         cabeza.goto(0,0)
         cabeza.direction="stop"
         #esconder los fragmentos
@@ -86,13 +96,15 @@ while True:
         score=0
         texto.clear()
         texto.write("Score: {}      High Score: {}".format(score,high_score),align="center",font=("Courier",24,"normal"))
+
         
     #crecer la serpiente
     if cabeza.distance(comida)<20:
+        sonidoComida.play()
         x=random.randint(-280,280)
         y=random.randint(-280,280)
         comida.goto(x,y)
-
+        
         nuevo_segmento = turtle.Turtle()
         nuevo_segmento.speed(0)
         nuevo_segmento.shape("square")
@@ -120,7 +132,11 @@ while True:
     #colision con el cuerpo de la serpiente  
     for segmento in segmentos:
         if segmento.distance(cabeza)<20:
-            time.sleep(1)
+            pygame.mixer.music.pause()
+            sonidoChoque.play()
+            time.sleep(2)
+            pygame.mixer.music.unpause()
+            pygame.mixer.music.rewind()
             cabeza.goto(0,0)
             cabeza.direction="stop"
             #esconder los fragmentos
